@@ -1,0 +1,27 @@
+body {
+  margin: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+#app {
+  font-family: 'Montserrat', sans-serif;
+  color: #333333;
+}
+
+.chevron {
+  $chevron-width: 12px;
+  $chevron-height: 24px;
+  display: inline-block;
+  vertical-align: middle;
+  width: $chevron-width;
+  height: $chevron-height;
+  background-image: url(~./assets/chevron.png);
+  background-size: $chevron-width $chevron-height;
+  font-size: 0;
+  &.chevron-left {
+    transform: rotate(180deg);
+  }
+}
