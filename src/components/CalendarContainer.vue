@@ -21,14 +21,19 @@
 
 <script>
   import { format, getDaysInMonth, getDay, startOfMonth, addMonths } from 'date-fns'
+  import axios from 'axios'
+
+  const now = new Date()
+  const url = 'https://scheduler-challenge.herokuapp.com/schedule'
 
   export default {
     name: 'CalendarContainer',
     data() {
       return {
-        today: null,
-        dateContext: null,
-        weekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+        weekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        today: now,
+        dateContext: now,
+        events: null
       }
     },
     computed: {
@@ -69,9 +74,11 @@
       }
     },
     mounted() {
-      const now = new Date()
-      this.today = now
-      this.dateContext = now
+      axios
+        .get(url)
+        .then(response => {
+          this.events = response.data
+        })
     }
   }
 </script>
