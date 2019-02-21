@@ -58,23 +58,31 @@
   }
   .date {
     position: relative;
-    padding: ($large-margin + $small-margin) $small-margin 0 0;
+    padding: 0 $small-margin 0 0;
     h3 {
       position: absolute;
       top: 0;
       left: 0;
+      width: 100%;
       padding: $xsmall-margin;
-      border-radius: 4px;
       margin: 0;
+      background-color: $white;
       font-size: $base-font-size;
       font-weight: $font-bold;
       line-height: 1em;
-      text-align: center;
+      text-align: left;
+    }
+    .events {
+      padding-top: $large-margin;
+      height: $grid-size - $small-margin;
+      overflow: auto;
     }
   }
   .today {
     h3 {
+      width: auto;
       min-width: $large-margin;
+      border-radius: 4px;
       background-color: $primary-pink;
       color: $white;
     }
