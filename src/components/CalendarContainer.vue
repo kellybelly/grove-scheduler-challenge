@@ -11,29 +11,38 @@
 
     <div class="calendar-body">
       <div class="weekday" v-for="day in weekdays" :key="day.id">{{ day }}</div>
-      <div class="no-date" v-for="index in firstDayOfMonth" :key="index.id">{{ index }}</div>
+      <div class="no-date" v-for="index in startDayOfMonth" :key="index.id">{{ index }}</div>
       <div class="date" v-for="date in daysInMonth" :key="date.id" :class="{ 'today': date == initialDate && currentMonth == initialMonth && currentYear == initialYear }">
         <h3>{{ date }}</h3>
+        <div class="events" v-if="getEventsAtDate(date)">
+          <CalendarEvent v-for="eventInfo in getEventsAtDate(date)" :key="eventInfo.id" :eventInfo="eventInfo"></CalendarEvent>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-  import { format, getDaysInMonth, getDay, startOfMonth, addMonths } from 'date-fns'
   import axios from 'axios'
+  import parser from 'cron-parser'
+  import { format, getDaysInMonth, startOfMonth, getDay, endOfMonth, addMonths } from 'date-fns'
+
+  import CalendarEvent from './CalendarEvent.vue'
 
   const now = new Date()
   const url = 'https://scheduler-challenge.herokuapp.com/schedule'
 
   export default {
     name: 'CalendarContainer',
+    components: {
+      CalendarEvent
+    },
     data() {
       return {
         weekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
         today: now,
         dateContext: now,
-        events: null
+        eventsData: []
       }
     },
     computed: {
@@ -52,14 +61,66 @@
       currentMonth: function () {
         return format(this.dateContext, 'MMMM')
       },
-      currentDate: function () {
-        return format(this.dateContext, 'D')
-      },
       daysInMonth: function () {
         return getDaysInMonth(this.dateContext)
       },
-      firstDayOfMonth: function () {
-        return getDay(startOfMonth(this.dateContext))
+      startDateOfMonth: function () {
+        return startOfMonth(this.dateContext)
+      },
+      startDayOfMonth: function () {
+        return getDay(this.startDateOfMonth)
+      },
+      endDateOfMonth: function () {
+        return endOfMonth(this.dateContext)
+      },
+      eventsInMonth: function () {
+        let eventsObj = {}
+
+        for (let event of this.eventsData) {
+          try {
+            // cron parser does not support cron format in extended mode
+            // needs five fields
+            let cronString = event.attributes.cron
+            let cronArray = cronString.split(' ')
+            if (cronArray.length < 5) {
+              for (let i = cronArray.length; i < 5; i++) {
+                cronArray[i] = '*'
+              }
+              cronString = cronArray.join(' ')
+            }
+
+            let cronIterator = parser.parseExpression(cronString, {
+              currentDate: this.startDateOfMonth,
+              endDate: this.endDateOfMonth,
+              iterator: true
+            })
+            let cronIteratorHasNext = true
+
+            while (cronIteratorHasNext) {
+              try {
+                let nextObj = cronIterator.next()
+                let date = format(nextObj.value, 'D')
+
+                if (!(date in eventsObj)) {
+                  eventsObj[date] = []
+                }
+
+                eventsObj[date].push({
+                  name: event.attributes.name,
+                  time: format(nextObj.value, 'h:mma'),
+                  timestamp: format(nextObj.value, 'X'),
+                  type: event.type,
+                })
+                cronIteratorHasNext = !nextObj.done
+              } catch (e) {
+                break;
+              }
+            }
+          } catch (e) {
+            break
+          }
+        }
+        return eventsObj
       }
     },
     methods: {
@@ -71,13 +132,21 @@
       },
       resetDateContext: function () {
         this.dateContext = this.today
+      },
+      getEventsAtDate: function (date) {
+        // sort list of events by timestamp
+        let eventsAtDate = this.eventsInMonth[date]
+        if (Array.isArray(eventsAtDate)) {
+          eventsAtDate.sort((a, b) => (a.timestamp > b.timestamp) ? 1 : -1)
+        }
+        return eventsAtDate
       }
     },
     mounted() {
       axios
         .get(url)
         .then(response => {
-          this.events = response.data
+          this.eventsData = response.data.data
         })
     }
   }

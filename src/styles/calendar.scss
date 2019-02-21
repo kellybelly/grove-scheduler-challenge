@@ -1,17 +1,19 @@
+@import 'variables';
+
 .calendar {
-  width: 100%;
-  max-width: 960px;
-  margin: 48px auto 0;
+  width: 1260px;
+  margin: ($large-margin * 2) auto;
 }
 
 .calendar-header {
+  overflow: auto;
   h2 {
     display: inline-block;
     float: left;
     max-width: 50%;
     margin: 0;
-    font-size: 32px;
-    font-weight: 700;
+    font-size: $large-font-size;
+    font-weight: $font-bold;
   }
 }
 
@@ -26,53 +28,55 @@
   .btn-today {
     display: inline-block;
     vertical-align: middle;
-    padding: 0 8px;
-    margin: 0 8px;
-    font-size: 12px;
-    line-height: 24px;
-    border: 1px solid #333;
+    padding: 0 $small-margin;
+    margin: 0 $small-margin;
+    font-size: $small-font-size;
+    line-height: $large-margin;
+    border: 1px solid $black;
     border-radius: 4px;
   }
 }
 
 .calendar-body {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  width: 100%;
-  > :not(.weekday)::before {
-    content: "";
+  $grid-size: 180px;
+  > div {
     display: inline-block;
-    padding-bottom: 100%;
+    width: $grid-size;
+    overflow: auto;
+  }
+  > :not(.weekday) {
+    height: $grid-size;
   }
   .weekday {
-    padding: 24px 0;
-    font-size: 16px;
-    font-weight: 400;
-    line-height: 1.2em;
+    padding: $large-margin 0;
+    font-size: $base-font-size;
+    font-weight: $font-regular;
+    line-height: 1em;
   }
   .no-date {
     font-size: 0;
   }
   .date {
     position: relative;
+    padding: ($large-margin + $small-margin) $small-margin 0 0;
     h3 {
       position: absolute;
       top: 0;
       left: 0;
-      padding: 4px;
+      padding: $xsmall-margin;
       border-radius: 4px;
       margin: 0;
-      font-size: 16px;
-      font-weight: 700;
-      line-height: 1.2em;
+      font-size: $base-font-size;
+      font-weight: $font-bold;
+      line-height: 1em;
       text-align: center;
     }
   }
   .today {
     h3 {
-      min-width: 24px;
-      background: #ed7373;
-      color: #ffffff;
+      min-width: $large-margin;
+      background-color: $primary-pink;
+      color: $white;
     }
 
   }

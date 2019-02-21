@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <CalendarContainer/>
+    <CalendarContainer></CalendarContainer>
   </div>
 </template>
 

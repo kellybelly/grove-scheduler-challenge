@@ -1,0 +1,13 @@
+@import 'variables';
+
+.calendar-event {
+  padding: $xsmall-margin;
+  margin-bottom: $xsmall-margin;
+  border-radius: 4px;
+  font-size: $small-font-size;
+  line-height: 1em;
+}
+
+.event-task {
+  background-color: $grey;
+}
