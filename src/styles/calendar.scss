@@ -28,7 +28,7 @@
   .btn-today {
     display: inline-block;
     vertical-align: middle;
-    padding: 0 $small-margin;
+    padding: 0 $medium-margin;
     margin: 0 $small-margin;
     font-size: $small-font-size;
     line-height: $large-margin;
@@ -64,28 +64,31 @@
       top: 0;
       left: 0;
       width: 100%;
-      padding: $xsmall-margin;
+      padding-bottom: $small-margin;
       margin: 0;
       background-color: $white;
       font-size: $base-font-size;
       font-weight: $font-bold;
       line-height: 1em;
       text-align: left;
+      span {
+        display: inline-block;
+        padding: $xsmall-margin;
+      }
     }
     .events {
-      padding-top: $large-margin;
-      height: $grid-size - $small-margin;
+      padding-top: $large-margin + $small-margin;
+      height: $grid-size - $medium-margin;
       overflow: auto;
     }
   }
   .today {
-    h3 {
+    h3 span {
       width: auto;
       min-width: $large-margin;
       border-radius: 4px;
       background-color: $primary-pink;
       color: $white;
     }
-
   }
 }

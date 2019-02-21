@@ -1,4 +1,4 @@
-# grove-scheduler-challenge
+# Grove Scheduler Challenge
 
 ## Project setup
 ```

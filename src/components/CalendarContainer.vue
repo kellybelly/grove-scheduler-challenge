@@ -13,7 +13,7 @@
       <div class="weekday" v-for="day in weekdays" :key="day.id">{{ day }}</div>
       <div class="no-date" v-for="index in startDayOfMonth" :key="index.id">{{ index }}</div>
       <div class="date" v-for="date in daysInMonth" :key="date.id" :class="{ 'today': date == initialDate && currentMonth == initialMonth && currentYear == initialYear }">
-        <h3>{{ date }}</h3>
+        <h3><span>{{ date }}</span></h3>
         <div class="events" v-if="getEventsAtDate(date)">
           <CalendarEvent v-for="eventInfo in getEventsAtDate(date)" :key="eventInfo.id" :eventInfo="eventInfo"></CalendarEvent>
         </div>
@@ -79,9 +79,10 @@
         for (let event of this.eventsData) {
           try {
             // cron parser does not support cron format in extended mode
-            // needs five fields
+            // so need to make sure string has five fields
             let cronString = event.attributes.cron
             let cronArray = cronString.split(' ')
+
             if (cronArray.length < 5) {
               for (let i = cronArray.length; i < 5; i++) {
                 cronArray[i] = '*'
@@ -111,6 +112,7 @@
                   timestamp: format(nextObj.value, 'X'),
                   type: event.type,
                 })
+
                 cronIteratorHasNext = !nextObj.done
               } catch (e) {
                 break;
@@ -140,6 +142,33 @@
           eventsAtDate.sort((a, b) => (a.timestamp > b.timestamp) ? 1 : -1)
         }
         return eventsAtDate
+      },
+      checkEventIsStarting: function () {
+        let nowTimestamp = format(new Date(), 'X')
+        let eventsToday = this.getEventsAtDate(this.initialDate)
+        for (let event of eventsToday) {
+          if (event.timestamp == nowTimestamp) {
+            this.createEventNotification(event.name)
+          }
+        }
+      },
+      createEventNotification: function (eventName) {
+        if (Notification.permission === 'granted') {
+          let notification = new Notification('Your event is starting now!', { body: eventName })
+        }
+        // chrome does not implement the permission static property
+        // so need to check for NOT 'denied' instead of 'default'
+        else if (Notification.permission !== 'denied') {
+          Notification.requestPermission(function (permission) {
+            // need to make sure Chrome stores the info
+            if(!('permission' in Notification)) {
+              Notification.permission = permission
+            }
+            if (permission === 'granted') {
+              let notification = new Notification('Your event is starting now!', { body: eventName })
+            }
+          })
+        }
       }
     },
     mounted() {
@@ -148,6 +177,8 @@
         .then(response => {
           this.eventsData = response.data.data
         })
+
+      setInterval(this.checkEventIsStarting, 60000)
     }
   }
 </script>
