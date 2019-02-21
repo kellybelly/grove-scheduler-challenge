@@ -154,7 +154,7 @@
       },
       createEventNotification: function (eventName) {
         if (Notification.permission === 'granted') {
-          let notification = new Notification('Your event is starting now!', { body: eventName })
+          new Notification('Your event is starting now!', { body: eventName })
         }
         // chrome does not implement the permission static property
         // so need to check for NOT 'denied' instead of 'default'
@@ -165,7 +165,7 @@
               Notification.permission = permission
             }
             if (permission === 'granted') {
-              let notification = new Notification('Your event is starting now!', { body: eventName })
+              new Notification('Your event is starting now!', { body: eventName })
             }
           })
         }
