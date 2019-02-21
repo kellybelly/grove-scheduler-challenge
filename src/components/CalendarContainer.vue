@@ -178,7 +178,7 @@
           this.eventsData = response.data.data
         })
 
-      setInterval(this.checkEventIsStarting, 60000)
+      setInterval(this.checkEventIsStarting, 1000)
     }
   }
 </script>
